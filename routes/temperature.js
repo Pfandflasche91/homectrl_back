@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const database = require('../database');
 let temperatures = [
   { id: 1, value: 22.5, timestamp: new Date() },
   { id: 2, value: 23.0, timestamp: new Date() }
@@ -22,9 +23,29 @@ let temperatures = [
  *     responses:
  *       '200':
  *         description: A successful response
+ *       '500':
+ *         description: Internal ServerError
  */
-router.get('/', (req, res) => {
-  res.json(temperatures);
+router.get('/', async (req, res) => {
+    try {
+        //connect to MariaDB
+        //database.connectDB();
+
+        // SQL-Abfrage zum Abrufen aller Temperaturwerte aus der Tabelle "DHT11"
+        const query = 'SELECT temperature FROM DHT11';
+    
+        // Ausführen der SQL-Abfrage
+        const temperatures = await database.query(query);
+    
+        // Rückgabe der Temperaturwerte als JSON
+        res.json(temperatures);
+      } catch (error) {
+        // Fehlerbehandlung bei einem Datenbankfehler
+        console.error('Fehler beim Abrufen der Temperaturwerte:', error);
+        res.status(500).json({ message: 'Interner Serverfehler' });
+      }finally {
+        //database.disconnectDB();
+      }
 });
 
 /**
@@ -46,10 +67,17 @@ router.get('/', (req, res) => {
  *       '404':
  *         description: Temperature reading not found
  */
-router.get('/:id', (req, res) => {
-  const temperature = temperatures.find(t => t.id === parseInt(req.params.id));
-  if (!temperature) return res.status(404).send('Temperature reading not found');
-  res.json(temperature);
+router.get('/:id', async (req, res) => {
+    try {
+        const query = 'SELECT temperature FROM DHT11 WHERE id = ?';
+        id = req.params.id;
+        // Ausführen der SQL-Abfrage
+        const temperatures = await database.query(query,[id]);
+        res.json(temperatures);
+    } catch (error) {
+        
+    }
+
 });
 
 /**

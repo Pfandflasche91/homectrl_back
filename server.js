@@ -10,6 +10,9 @@ const climateRoute = require('./routes/climate');
 const app = express();
 const port = process.env.PORT || 3000;
 
+const database = require('./database');
+
+
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -29,8 +32,9 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ['./routes/users.js', './routes/temperature.js', './routes/humidity.js', './routes/climate.js'], // Pfad zu den API-Routen
+  apis: ['./routes/temperature.js', './routes/humidity.js', './routes/climate.js'], // Pfad zu den API-Routen
 };
+
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
@@ -43,3 +47,10 @@ app.use('/', climateRoute);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+setTimeout(() => {
+  console.log('Nach 3 Sekunden');
+  database.testConnection();
+}, 1000);
+
+
