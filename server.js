@@ -30,6 +30,10 @@ const swaggerOptions = {
         url: `http://localhost:${port}`,
         description: 'Development server',
       },
+      {
+        url: `http://192.168.2.231:${port}`,
+        description: 'Productiv System',
+      },
     ],
   },
   apis: ['./routes/temperature.js', './routes/humidity.js', './routes/climate.js'], // Pfad zu den API-Routen
