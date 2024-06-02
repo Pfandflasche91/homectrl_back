@@ -72,8 +72,9 @@ router.get('/:id', async (req, res) => {
         const query = 'SELECT temperature FROM DHT11 WHERE id = ?';
         id = req.params.id;
         // Ausführen der SQL-Abfrage
-        const temperatures = await database.query(query,[id]);
-        res.json(temperatures);
+        const result = await database.query(query,[id]);
+        console.log(result);
+        res.json(result);
     } catch (error) {
         
     }
@@ -102,14 +103,17 @@ router.get('/:id', async (req, res) => {
  *         description: Temperature reading created successfully
  */
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
-      const query ='INSERT INTO DHT11(?)'
-      value: req.body.value,
-      database.query(query,[value]);
-      res.status(201).json("worked");
+      const query ='INSERT INTO DHT11 (TEMPERATURE) VALUES (?)';
+      temp =req.body.value;
+      console.log(temp);
+      const result = await database.query(query,[temp]);
+      //res.json({ message: 'Temperature added successfully', result });
+      console.log(result);
+      res.status(201).json(`Temperature : ${temp}° added in row ${result.insertId}`);
   }catch(error) {
-
+      res.status(500).json({ error: error.message });
   }
 
 });
