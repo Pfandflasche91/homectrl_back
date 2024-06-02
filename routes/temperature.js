@@ -32,8 +32,7 @@ router.get('/', async (req, res) => {
         //database.connectDB();
 
         // SQL-Abfrage zum Abrufen aller Temperaturwerte aus der Tabelle "DHT11"
-        const query = 'SELECT temperature FROM DHT11';
-    
+        const query = 'SELECT temperature, datetime FROM DHT11';
         // Ausführen der SQL-Abfrage
         const temperatures = await database.query(query);
     
@@ -105,13 +104,15 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-      const query ='INSERT INTO DHT11 (TEMPERATURE) VALUES (?)';
+      const query ='INSERT INTO DHT11 (TEMPERATURE,DATETIME) VALUES (?,?)';
       temp =req.body.value;
       console.log(temp);
-      const result = await database.query(query,[temp]);
+      datetime = new Date(); 
+      console.log(datetime);
+      const result = await database.query(query,[temp,datetime]);
       //res.json({ message: 'Temperature added successfully', result });
       console.log(result);
-      res.status(201).json(`Temperature : ${temp}° added in row ${result.insertId}`);
+      res.status(201).json(`Temperature : ${temp}° , Timestamp: ${datetime} added in row ${result.insertId}`);
   }catch(error) {
       res.status(500).json({ error: error.message });
   }
