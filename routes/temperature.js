@@ -101,7 +101,20 @@ router.get('/:id', async (req, res) => {
  *       '201':
  *         description: Temperature reading created successfully
  */
+
 router.post('/', (req, res) => {
+  try {
+      const query ='INSERT INTO DHT11(?)'
+      value: req.body.value,
+      database.query(query,[value]);
+      res.status(201).json("worked");
+  }catch(error) {
+
+  }
+
+});
+
+/** 
   const newTemperature = {
     id: temperatures.length + 1,
     value: req.body.value,
@@ -109,7 +122,7 @@ router.post('/', (req, res) => {
   };
   temperatures.push(newTemperature);
   res.status(201).json(newTemperature);
-});
+*/
 
 /**
  * @swagger
