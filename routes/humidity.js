@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const database = require('../database');
 let humidities = [
   { id: 1, value: 45.0, timestamp: new Date() },
   { id: 2, value: 50.0, timestamp: new Date() }
