@@ -23,8 +23,25 @@ let humidities = [
  *       '200':
  *         description: A successful response
  */
-router.get('/', (req, res) => {
-  res.json(humidities);
+router.get('/', async (req, res) => {
+  try {
+    //connect to MariaDB
+    //database.connectDB();
+
+    // SQL-Abfrage zum Abrufen aller Temperaturwerte aus der Tabelle "DHT11"
+    const query = 'SELECT humidity, datetime FROM DHT11';
+    // Ausführen der SQL-Abfrage
+    const humidity = await database.query(query);
+
+    // Rückgabe der Temperaturwerte als JSON
+    res.json(humidity);
+  } catch (error) {
+    // Fehlerbehandlung bei einem Datenbankfehler
+    console.error('Fehler beim Abrufen der Luftfeuchtigkeitswerte:', error);
+    res.status(500).json({ message: 'Interner Serverfehler' });
+  }finally {
+    //database.disconnectDB();
+  }
 });
 
 /**
@@ -46,10 +63,16 @@ router.get('/', (req, res) => {
  *       '404':
  *         description: Humidity reading not found
  */
-router.get('/:id', (req, res) => {
-  const humidity = humidities.find(h => h.id === parseInt(req.params.id));
-  if (!humidity) return res.status(404).send('Humidity reading not found');
-  res.json(humidity);
+router.get('/:id', async (req, res) => {
+  try {
+    const query = 'SELECT humidity FROM DHT11 WHERE id = ?';
+    id = req.params.id;
+    // Ausführen der SQL-Abfrage
+    const result = await database.query(query,[id]);
+    console.log(result);
+    res.json(result);
+} catch (error) {
+}
 });
 
 /**
@@ -73,14 +96,21 @@ router.get('/:id', (req, res) => {
  *       '201':
  *         description: Humidity reading created successfully
  */
-router.post('/', (req, res) => {
-  const newHumidity = {
-    id: humidities.length + 1,
-    value: req.body.value,
-    timestamp: new Date()
-  };
-  humidities.push(newHumidity);
-  res.status(201).json(newHumidity);
+router.post('/', async (req, res) => {
+    try {
+      const query ='INSERT INTO DHT11 (Humidity,DATETIME) VALUES (?,?)';
+      hum =req.body.value;
+      console.log(hum);
+      datetime = new Date(); 
+      console.log(datetime);
+      const result = await database.query(query,[hum,datetime]);
+      //res.json({ message: 'Temperature added successfully', result });
+      console.log(result);
+      res.status(201).json(`Humidity : ${hum}° , Timestamp: ${datetime} added in row ${result.insertId}`);
+  }catch(error) {
+      res.status(500).json({ error: error.message });
+  }
+
 });
 
 /**
