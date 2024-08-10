@@ -1,16 +1,17 @@
-import express, { Express, Request, Response } from "express";
-const port = 8000;
+import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
+import { swaggerOptions } from './swaggerOptions.js';
 
-const app: Express = express();
+const app = express();
+const port = 3000;
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("HELLO FROM EXPRESS + TS!sdf!");
-});
 
-app.get("/hi", (req: Request, res: Response) => {
-  res.send("BYEEE!!");
-});
+// Swagger Docs
+const swaggerDocs = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.listen(port, () => {
-  console.log(`now listening on port ${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`API docs available at http://localhost:${port}/api-docs`);
 });

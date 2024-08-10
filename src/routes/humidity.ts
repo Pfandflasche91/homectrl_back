@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 const database = require('../database');
@@ -67,7 +67,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const query = 'SELECT humidity FROM DHT11 WHERE id = ?';
-    id = req.params.id;
+    let id = req.params.id;
     // Ausführen der SQL-Abfrage
     const result = await database.query(query,[id]);
     console.log(result);
@@ -100,9 +100,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
       const query ='INSERT INTO DHT11 (Humidity,DATETIME) VALUES (?,?)';
-      hum =req.body.value;
+      let hum =req.body.value;
       console.log(hum);
-      datetime = new Date(); 
+      let datetime = new Date(); 
       console.log(datetime);
       const result = await database.query(query,[hum,datetime]);
       //res.json({ message: 'Temperature added successfully', result });
