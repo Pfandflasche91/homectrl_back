@@ -1,32 +1,27 @@
-
-const mariadb = require('mariadb');
-
-
-// Konfiguration für die Verbindung zur Datenbank
-
+import mariadb from 'mariadb';
 
 const pool = mariadb.createPool({
-  host: '192.168.2.231', // Der Hostname der Datenbank (in diesem Fall lokal)
-  user: 'myuser', // Ihr Datenbank-Benutzername
-  password: 'mypassword', // Ihr Datenbank-Passwort
-  database: 'mydb', // Der Name Ihrer Datenbank
+  host: '192.168.2.231', 
+  user: 'myuser', 
+  password: 'mypassword', 
+  database: 'mydb', 
   connectionLimit :5
 });
 
 // Funktion zum Ausführen von SQL-Abfragen
 
  
-function connectDB(){
+export function connectDB(){
     pool.getConnection();
-    console.log('Erfolgreich mit MariaDB verbunden!');
+    console.log('Connected to database');
 }
 
-function disconnectDB(){
+export function disconnectDB(){
     pool.end();
-    console.log('Verbindung mit MariaDB geschlossen');
+    console.log('Disconnected to database');
 }
 
-  async function testConnection() {
+export async function testConnection() {
     console.log('TestConnection Routine START!');
     let conn;
     try {
@@ -41,27 +36,19 @@ function disconnectDB(){
         }
         console.log('TestConnection Routine END!'); 
     }
-  }
+  }  
   
-  async function query(sql, values) {
-    let conn;
+export async function querydb (sql: string, params?: any[]) {
+    let conn :any;
     try {
-      conn = await pool.getConnection();
-      console.log('verbunden');
-      const rows = await conn.query(sql, values);
+      connectDB();
+      const rows = await conn.query(sql, params);
       return rows;
     } catch (error) {
         console.log('ERROR');
       throw error;
     } finally {
-      if (conn) conn.release();
+      disconnectDB();
       console.log('FINAL');
     }
   } 
-
-  module.exports = {
-    testConnection,
-    connectDB,
-    disconnectDB,
-    query
-  };
