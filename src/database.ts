@@ -8,9 +8,6 @@ const pool = mariadb.createPool({
   connectionLimit :5
 });
 
-// Funktion zum Ausführen von SQL-Abfragen
-
- 
 export function connectDB(){
     pool.getConnection();
     console.log('Connected to database');
@@ -52,3 +49,4 @@ export async function querydb (sql: string, params?: any[]) {
       console.log('FINAL');
     }
   } 
+  export default pool;

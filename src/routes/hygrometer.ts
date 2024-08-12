@@ -1,44 +1,26 @@
 import express from 'express';
 const router = express.Router();
 
-import { querydb } from '../database.js';
+import pool from '../database.js';
 
+
+// In einer der Routendateien
 /**
  * @swagger
- * tags:
- *   name: Hygrometer
- *   description: API endpoints for managing temerature and humidity sensor data
- */
-
-/**
- * @swagger
- * /hygrometer/{id}:
+ * /api/test:
  *   get:
- *     summary: adfGet a humidity reading by ID
- *     tags: [Hygrometer]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: The humidity reading ID
+ *     summary: Test route
+ *     description: This is a test route
  *     responses:
- *       '200':
- *         description: A successful response
- *       '404':
- *         description: Humidity reading not found
+ *       200:
+ *         description: Successful response
  */
-router.get('/:id', async (req, res) => {
-  try {
-    const query = 'SELECT humidity FROM DHT11 WHERE id = ?';
-    let id = req.params.id;
-    // Ausführen der SQL-Abfrage
-    const result = await querydb(query,[id]);
-    console.log(result);
-    res.json(result);
-} catch (error) {
-}
+router.get('/', (req, res) => {
+  res.send('Test route');
 });
 
-module.exports = router;
+router.use((req, res) => {
+  res.status(404).json({ message: 'Route nicht gefunden - route' });
+});
+
+export default router;

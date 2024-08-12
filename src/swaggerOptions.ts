@@ -1,6 +1,16 @@
 // src/swaggerOptions.ts
+import swaggerJsDoc, { Options } from 'swagger-jsdoc';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+// __filename und __dirname für ES-Module definieren
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
 const port = 3000;
-export const swaggerOptions = {
+
+const swaggerOptions: Options = {
     swaggerDefinition: {
       openapi: '3.0.0',
       info: {
@@ -19,5 +29,7 @@ export const swaggerOptions = {
           },
       ],
     },
-    apis: ['./src/routes/*.ts'], // Pfad zu den API-Dokumentationskommentaren
+    apis: ['./dist/routes/*.js'],
   };
+
+  export default swaggerOptions;
