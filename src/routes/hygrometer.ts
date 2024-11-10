@@ -13,23 +13,6 @@ import database from '../database.js';
 
 /**
  * @swagger
- * /hygrometer:
- *   get:
- *     tags: [Hygrometer]
- *     summary: Get all Hygrometers 
- *     description: Displays latest hygrometer sensors data 
- *     responses:
- *       200:
- *         description: Successful response
- *       400:
- *         description: Bad Request
- */
-router.get('/', (req, res) => {
-  res.send('Test route das ein test');
-});
-
-/**
- * @swagger
  * /hygrometer/{id}:
  *  get:
  *     tags: [Hygrometer]
@@ -51,15 +34,8 @@ router.get('/', (req, res) => {
  * 
  */
 router.get('/:id', async (req, res) => {
-  try {
-    const query = 'SELECT temperature,humidity,sensornr FROM DHT11 WHERE id = ?';
-    let id = req.params.id;
-    // Ausführen der SQL-Abfrage
-    const result = await database.query(query,[id]);
-    console.log(result);
-    res.json(result);
-} catch (error) {
-}
+  
+    res.status(200).json('NYI');
 });
 
 /**
@@ -117,9 +93,13 @@ router.get('/:id', async (req, res) => {
  *                       description: The timestamp of the reading
  */
 router.post('/', async (req, res) => {
+  console.log('here starts the post')
   try {
-    const query ='INSERT INTO DHT11 (Temperature,Humidity,Sensornr,DATETIME) VALUES (?,?)';
+    const query ='INSERT INTO DHT11 (Temperature,Humidity,Sensornr,DATETIME) VALUES (?,?,?,?)';
     const { Temperature, Humidity, Sensornr } = req.body;
+    console.log(Temperature);
+    console.log(Humidity);
+    console.log(Sensornr);
     
     let datetime = new Date(); 
     console.log(datetime);
@@ -128,7 +108,7 @@ router.post('/', async (req, res) => {
     console.log(result);
     res.status(201).json({
       message: `Temperature: ${Temperature}°, Humidity: ${Humidity}%, Sensor number: ${Sensornr}, Timestamp: ${datetime} added successfully.`,
-      insertId: result.insertId
+      insertId: `${result.insertId}`
     });
 }catch(error) {
     res.status(500).json({ error: error.message });
