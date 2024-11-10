@@ -66,7 +66,7 @@ router.get('/:id', async (req, res) => {
  * @swagger
  * /hygrometer:
  *   post:
- *     summary: Create a new Sensor reading
+ *     summary: Create a new sensor reading
  *     tags: [Hygrometer]
  *     requestBody:
  *       required: true
@@ -75,13 +75,46 @@ router.get('/:id', async (req, res) => {
  *           schema:
  *             type: object
  *             required:
- *               - value
+ *               - Temperature
+ *               - Humidity
+ *               - Sensornr
  *             properties:
- *               value:
+ *               Temperature:
  *                 type: number
+ *                 description: The temperature reading from the sensor
+ *               Humidity:
+ *                 type: number
+ *                 description: The humidity reading from the sensor
+ *               Sensornr:
+ *                 type: integer
+ *                 description: The sensor number identifier
  *     responses:
  *       '201':
  *         description: Sensor reading created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Confirmation message
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     Temperature:
+ *                       type: number
+ *                       description: The temperature reading from the sensor
+ *                     Humidity:
+ *                       type: number
+ *                       description: The humidity reading from the sensor
+ *                     Sensornr:
+ *                       type: integer
+ *                       description: The sensor number identifier
+ *                     DATETIME:
+ *                       type: string
+ *                       format: date-time
+ *                       description: The timestamp of the reading
  */
 router.post('/', async (req, res) => {
   try {
