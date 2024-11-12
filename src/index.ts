@@ -3,10 +3,20 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerOptions from './swaggerOptions.js';
 import hygrometerRoutes from './routes/hygrometer.js';
-
+import cors from 'cors';
 const app = express();
 const port = 3000;
 
+
+// CORS-Konfiguration
+const corsOptions = {
+  origin: 'http://192.168.2.231:8080', // Dein Frontend-URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+// CORS aktivieren
+app.use(cors(corsOptions));
 app.use(express.json());
 
 
