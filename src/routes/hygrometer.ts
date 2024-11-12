@@ -2,7 +2,8 @@ import express from 'express';
 const router = express.Router();
 
 import database from '../database.js';
-
+import { getClosestMeasurement } from '../services/hygrometerService.js'; 
+import { resourceLimits } from 'worker_threads';
 
 /**
  * @swagger
@@ -16,8 +17,8 @@ import database from '../database.js';
  * /hygrometer/{id}:
  *  get:
  *     tags: [Hygrometer]
- *     summary: Get all Hygrometers 
- *     description: Displays latest hygrometer sensors data 
+ *     summary: Get one Hygrometers measurement by ID 
+ *     description: Displays hygrometer sensors data 
  *     parameters:
  *      - in: path
  *        name: id
@@ -36,6 +37,58 @@ import database from '../database.js';
 router.get('/:id', async (req, res) => {
   
     res.status(200).json('NYI');
+});
+
+/**
+ * @swagger
+ * /hygrometer/:
+ *  get:
+ *     tags: [Hygrometer]
+ *     summary: Get all Hygrometers 
+ *     description: Displays hygrometer sensors data 
+ *     parameters:
+ *      - in: query
+ *        name: targetStartDatetime
+ *        required: false
+ *        schema:
+ *          type: string
+ *          format: date-time
+ *          example: '2024-01-01T10:00:00Z'  # Beispiel für das date-time-Format
+ *          description: Starting point for the desired period in ISO 8601 format  (YYYY-MM-DDTHH:MM:SSZ)
+ *      - in: query
+ *        name: targetEndDatetime
+ *        required: false
+ *        schema:
+ *          type: string
+ *          format: date-time
+ *          example: '2024-01-01T10:00:00Z'  # Beispiel für das date-time-Format
+ *          description: Starting point for the desired period in ISO 8601 format  (YYYY-MM-DDTHH:MM:SSZ)
+ * 
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       400:
+ *         description: Bad Request
+ * 
+ */
+router.get('/', async (req, res) => {
+  const targetStartDatetime = req.query.targetStartDatetime as string;
+  const targetEndDatetime = req.query.targetEndDatetime as string;
+  try {
+    const closestMeasurementStart = await getClosestMeasurement(targetStartDatetime);
+    const closestMeasurementEnd = await getClosestMeasurement(targetEndDatetime);
+    
+    const query = 'SELECT * FROM DHT11 WHERE id BETWEEN ? AND ?';
+    const result = await database.query(query, [closestMeasurementStart.id, closestMeasurementEnd.id]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'No measurements found for the given ID range.' });
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+  
 });
 
 /**
@@ -93,18 +146,11 @@ router.get('/:id', async (req, res) => {
  *                       description: The timestamp of the reading
  */
 router.post('/', async (req, res) => {
-  console.log('here starts the post')
   try {
     const query ='INSERT INTO DHT11 (Temperature,Humidity,Sensornr,DATETIME) VALUES (?,?,?,?)';
     const { Temperature, Humidity, Sensornr } = req.body;
-    console.log(Temperature);
-    console.log(Humidity);
-    console.log(Sensornr);
-    
     let datetime = new Date(); 
-    console.log(datetime);
     const result = await database.query(query, [Temperature, Humidity, Sensornr, datetime]);
-    //res.json({ message: 'Temperature added successfully', result });
     console.log(result);
     res.status(201).json({
       message: `Temperature: ${Temperature}°, Humidity: ${Humidity}%, Sensor number: ${Sensornr}, Timestamp: ${datetime} added successfully.`,
