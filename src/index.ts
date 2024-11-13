@@ -8,24 +8,8 @@ const app = express();
 const port = 3000;
 
 
-// Definiere eine Liste von erlaubten Origins
-const allowedOrigins = [
-  'http://192.168.2.231:8080',  
-  'http://localhost:4200',      
-
-];
-
-// Funktion, um den Origin zu prüfen
 const corsOptions = {
-  origin: (origin: string, callback: Function) => {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      // Erlaube den Origin, wenn er in der Liste ist oder wenn der Origin leer ist (für lokale Tests)
-      callback(null, true);
-    } else {
-      // Blockiere den Origin, wenn er nicht in der Liste ist
-      callback(new Error('Not allowed by CORS'), false);
-    }
-  },
+  origin: '*',  // Alle Origins erlauben (nicht empfohlen für Produktionsumgebungen)
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
