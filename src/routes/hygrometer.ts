@@ -150,8 +150,8 @@ router.post('/', async (req, res) => {
     const query ='INSERT INTO DHT11 (Temperature,Humidity,Sensornr,DATETIME) VALUES (?,?,?,?)';
     const { Temperature, Humidity, Sensornr } = req.body;
     let datetime = new Date(); 
-    const datetimeUTC = datetime.toISOString();
-    const result = await database.query(query, [Temperature, Humidity, Sensornr, datetimeUTC]);
+    
+    const result = await database.query(query, [Temperature, Humidity, Sensornr, datetime]);
     console.log(result);
     res.status(201).json({
       message: `Temperature: ${Temperature}°, Humidity: ${Humidity}%, Sensor number: ${Sensornr}, Timestamp: ${datetime} added successfully.`,
